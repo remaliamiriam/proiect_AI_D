@@ -1,9 +1,8 @@
-import { useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface LoginFormProps {
-  onSuccess?: () => void;
+  onSuccess?: () => void;            // callback pentru navigare
   onSwitchToRegister?: () => void;
 }
 
@@ -13,8 +12,7 @@ export function LoginForm({ onSuccess, onSwitchToRegister }: LoginFormProps) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { signIn, profile, refreshProfile } = useAuth();
-  const navigate = useNavigate();
+  const { signIn, refreshProfile, profile } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,13 +23,8 @@ export function LoginForm({ onSuccess, onSwitchToRegister }: LoginFormProps) {
       await signIn(email, password);
       await refreshProfile();
 
-      // Redirect automat în funcție de rol
-      if (profile?.is_admin) {
-        navigate('/admin');
-      } else {
-        onSuccess?.();
-        navigate('/posts'); // sau pagina principală pentru utilizatori
-      }
+      // Folosește callback-ul pentru navigare
+      onSuccess?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Eroare la autentificare');
     } finally {
